@@ -1,0 +1,219 @@
+
+Descrierea de mai jos este pentru o implementare fara clase!
+
+IMPORTANT:
+    Inainte de a se folosi baza de date trebuie sa se apeleze initialiseDatabase()
+
+Functii:
+    - GetClientInfo(clientName) intoarce un tuplu de forma:
+        (valid, clientName, password, quota)
+        valid este un boolean care specifica daca exista un inregistrare pentru
+        clientul respectiv (este True daca exista) iar celelalte sunt usor de inteles
+    
+    - changePass(clientName,password)
+        este apelata in momentul in care a fost accesptat un nou user sau atunci
+        cand se doreste modificarea parolei (daca vreti ac un wrapper sau ceva care
+        sa aiba un nume mai sugestiv pentru creare userEntry in database...)
+    
+    - addTorrentToDatabase(torrent, list)
+        torrent ese numele torentului
+        list est o lisa de tupluri ("nume_fisier(eventual cale fisier)", "dimensiune_fisier")
+            ambele fiind de tip String (daca vreti altceva spuneti si se rezolva)
+    
+        trebuie sa fie apelat inainte de apelarea oricaror alte functii de update
+        legate de torrentul respectiv
+    
+    - addTorrentFileToUser(client, torrent, file)
+        numele clientului, torrentului si al fisierului
+        
+        trebuie sa existe clientul, torrentul si fisierul din cadrul torrentului,
+        altfel nu se vor produce modificari si se va intoarce False
+    
+    - endServerDownload(torr,fileName)
+        numele torrentului si fisierului din torrent
+        
+        se transmite la incehierea descarcarii unui fisiere pe server
+    
+    - endClientDownload(clName, torr, fileName)
+        se transmite laincheierea downloadului la client
+    
+    - getListOfUnnecesaryFiles(shouldDelete)
+        functia asta primeste ca parametru o functie de evaluare
+        am si functia implementata, deci as putea sa-i fac un wrapper numit intr-un
+        mod kwl ceva de genul midnightSelecter() (ca e apelata la 24 de ore ca sa faca
+        update la cota)
+        intoarce o lista a tuturor fisierelor ce ar trebui sa fie sterse de pe server
+        (fisiere din torrenti, nu torrenti)
+        
+        pobabil ar trebui si o functie companion care sa primeasca lista de fisiere
+        inapoi, eventual cu cateva elemente eliminat si sa pot face update-ul bazei de date
+        abia la sfarsit (midnightCleaner()?)
+    
+    
+    O secventa normala de folosire a apelurilor ar fi ceva de genul:
+        initialiseDatabase(o singura data la pornire)
+                        |
+                        V
+        GetClientInfo(clientName) // ca sa va asigurati ca isi permite sa descarce tot
+                        |
+                        V
+        addTorrentToDatabase(torrent, list) // cand face cineva o cerere de torrent care nu mai era in curs de descarcare inexistent
+                        |
+                        V
+        addTorrentFileToUser(client, torrent, file) // cate un fisier pe rand
+                        |
+                        V        
+        endServerDownload(torr,fileName)
+                        |
+                        V        
+        endClientDownload(clName, torr, fileName)
+
+
+Nota:
+    As prefera sa nu ma notificati de mai multe ori in legatura cu terminarea
+    descarcarii unui fisier. Sa retineti cumva o lista care sa spuna ca fisierul
+    se descarca api la un moment da, cat se descopera ca s-a descarcat, sa fie
+    scos din lista si ignorat pe viitor cand se transmit mesaje de incheiere download
+
+Again, orice aveti de spus, spuneti, poate aveti nevoie si de alte functii, poate
+considerati ca eu am nevoie de alte functii...
+
+
+separator = "/"
+userFolder = "user"
+torrentsFolder = "torrents"
+databaseFolder = "."
+
+# Verifica existenta fisierului
+def checkFileExistence(filePath, fileName):
+
+# ar trebui sa transforme literele mari in _litera
+def turnNameForCompatibility(name):
+
+# ar trebui sa faca o conversie inversa din _litera in litera mare
+def turnBackNameForCompatibility(changedName):
+
+# intoarce folderul parinte al fisierului asociat torrentului
+def getTorrentFileParentFolder(name):
+
+# intoarce calea absoluta la fisierul asociat torrentului
+def getTorrentFilePath(name):
+
+# intoarce folderul parinte al fisierului asociat userului
+def getClientFileParentFolder(name):
+
+# intoarce calea absoluta la fisierul asociat userului
+def getClientFilePath(name):
+
+# creeaza/verifica folderele necesare functionarii bazei de date
+def initialiseDatabase():
+
+# deschide un fisier temporar
+def getTemporary(name):
+
+# copiaza cotinutul fisierului 2 in fisierul 1, linie cu linie
+def copyRestOfFile(destFile, srcFile):
+
+# schimba parola asociata unui user
+def changePass(clName,clPass):
+
+# modificarea informatiilor legate de download in fisierul user
+def modifyDownloadOnClient(clName,torr,fileName,fileStatus,size):
+
+# Nume_fisier_din_torrent:dimensiune;Status(+/-/x):data_solicitarii:data_descarcarii_complete:numar_de_downloaduri:cel_mai_recent_download:nume1:nume2:
+# * nesolicitat
+# - in curs de descarcare pe server
+# + descarcat pe server dar netransmis vreunui client
+# x transmis cel putin unui client
+# Modifica informatia referitoare la un torrent in fisierul asociat torrentului
+def modifyDownloadOnTorrents(torr,fileName,status,clName):
+
+# primeste clientul, parola, torrentul, fisierul, statusul fisierului 
+def updateClientInfo(clName,clPass,torr,fileName,fileStatus):
+    if not (clPass is None):
+        changePass(clName,clPass)
+    
+    modifyDownloadOnClient(clName,torr,fileName,fileStatus)
+
+# adauga un nou torrent la baza de date
+def addTorrentToDatabase(torr, fileList):
+
+# Intoarce o lista cu toti userii care au descarcat fisiere din torrent
+def getUsersWithTorrent(torrName):
+
+# elimina un fisier din lista unui torrent pentru un user
+def removeFileFromUser(userName,torrName,fileName):
+
+# elimina un fisier asociat unui torrent din intrarile tuturor userilor
+def removeFileFromAllEntries(torrName,fileName):
+
+# Intoarce o lista cu toti userii care au descarcat fisierul dat din torrent
+def getUsersWithTorrentFile(torrName,fileName):
+
+# elimina un torrent din fisierul unui user
+def removeTorrentFromUser(userName,torrName):
+
+# elimina un torrent cu nume dat din intrarile tuturor userilor
+def removeTorrentFromAllEntries(torrName):
+
+# recalculeaza cota la sfarsitul zilei
+def recomputeUsersQuota():
+
+# elimina un fisier de la un user
+def removeFileFromUser(clName,torr,fileName):
+
+# Elimina fisierele din baza de date
+def removeFileInfoFromDatabase(fileList):
+
+# Adauga un nou fisier 
+def addTorrentFileToUser(clName, torr, fileName):
+    
+# Notifica baza de date de incheirea unui download pe server
+def endServerDownload(torr,fileName):
+
+# Notifica baza de date de incheierea unui download la client
+def endClientDownload(clName, torr, fileName):
+
+# Intoarce lista clientilor ce au solicitat fisierul fileName din torrentul torr
+def getAssociatedClientList(torr,fileName):
+
+# Intoarce (True, dimensiune, status) sau (False, "", "")
+def getFileInfoOnTorrent(torr, fileName):
+
+# Intoarce "*" daca fisierul nu a fost cerut sau  statusul sau daca a fost cerut
+def getFileInfoOnClient(clName, torr, fileName):
+
+# Intoarce un dictionar cu torrentele accesate de un client
+# cheia: numele torrentului
+# informatia utila: lista de tupluri de forma (nume_fisier,status)
+# status poate avea una din valorile:
+#   - '-' in curs de descarcare
+#   - '+' decarcat la server
+#   - 'x' descarcat la client
+def getClientTorrentList(clName):
+
+
+# intoarce un tuplu cu 4 elemente (valid,name,pass,quota)
+#    - valid: (True/False) indica daca utilizatorul exista in sistem
+#    - name: (string) numele utilizatorului
+#    - pass: (string) parola
+#   - quota: (string) cota utilizata
+def GetClientInfo(clName):
+
+# Intoarce o lista de tupluri (torrent,fisier) cu smnificatia fisieru asociat
+# torrentului trebuie sters de pe disc
+# primeste o functie care evalueaza daca fisierul trebuie sters (intoarce
+# True daca trebuie sa fie sters
+def getListOfUnnecesaryFiles(shouldDelete):
+# Evalueaza daca un fisier trebuie sa fie sters
+# datele sunt primite sub forma YYYY.MM.DD sau UNKNOWN daca nu s-a intamplat
+def evaluate(dateInit,dateFinished,dateTransfered,numTransfers):
+
+# elimina toate informatiile legate de torrent din baza de date
+eliminateTorrentFromDatabase(torr):
+
+# elimina toate asocierile unui user cu un anume torrent
+def eliminateTorrentOnUserDemand(clName,torr):
+
+# intoarce valoarea totala solicitata de useri
+getTotalQuota()
